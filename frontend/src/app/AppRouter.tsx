@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from '../../node_modules/react-router-dom/dist/index';
 import Home from '../home/Home';
+import Form from '../form/Form';
 
 const AppRouter = () => {
 	return (
@@ -9,10 +10,10 @@ const AppRouter = () => {
 				index
 				element={<Home />}
 			/>
-			{/* <Route
-				path="/login"
-				element={<smt />}
-			/> */}
+			<Route
+				path="/form"
+				element={<Form />}
+			/>
 		</Routes>
 	);
 };
