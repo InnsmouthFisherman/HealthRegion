@@ -1,46 +1,117 @@
-import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Button, Card, CardActions, CardContent, TextField, Typography } from '@mui/material';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { clgContext } from '../theme';
 
 const Form = () => {
+	const { logi } = useContext(clgContext);
+	const navigate = useNavigate();
+
 	const card = (
 		<React.Fragment>
 			<CardContent>
-				<Typography gutterBottom>Word of the Day</Typography>
 				<Typography
 					variant="h5"
 					component="div"
+					sx={{ borderBottom: '1px solid' }}
 				>
-					be - nev - olent
+					Регион Здоровья
 				</Typography>
-				<Typography sx={{ color: 'text.secondary', mb: 1.5 }}>adjective</Typography>
-				<Typography variant="body2">
-					well meaning and kindly.
+				<Typography
+					gutterBottom
+					sx={{ mt: 2 }}
+				>
+					Введите данные в форму
+				</Typography>
+
+				<TextField
+					id="name-form"
+					label="Имя"
+					variant="standard"
+					color="info"
+					type="email"
+				/>
+				<TextField
+					sx={{ ml: 5 }}
+					id="mail-form"
+					label="Email"
+					variant="standard"
+					color="info"
+					type="email"
+				/>
+				<Typography sx={{ color: 'text.secondary', mt: 5 }}>еще какая то инфа</Typography>
+				<TextField
+					id="name-form"
+					label="Имя"
+					variant="standard"
+					color="info"
+					type="email"
+				/>
+				<TextField
+					sx={{ ml: 5 }}
+					id="mail-form"
+					label="Email"
+					variant="standard"
+					color="info"
+					type="email"
+				/>
+				<Typography
+					sx={{ mt: 2 }}
+					variant="body2"
+				>
+					тут можно что то про
 					<br />
-					{'"a benevolent smile"'}
+					{'конфиденциальность написать'}
 				</Typography>
 			</CardContent>
-			<CardActions>
+			<CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
 				<Button
 					size="small"
 					color="secondary"
+					variant="outlined"
 				>
-					Learn More
+					Узнать о
+				</Button>
+				<Button
+					size="small"
+					color="info"
+					variant="contained"
+				>
+					Отправить форму
 				</Button>
 			</CardActions>
 		</React.Fragment>
 	);
+
 	return (
-		<div>
-			<p>oein</p>
+		<div
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				flexDirection: 'column',
+				height: '70vh',
+			}}
+		>
 			<Button
 				variant="contained"
-				color="error"
+				color="info"
+				onClick={() => navigate('/')}
 			>
-				Hello form
+				to Home
 			</Button>
-			<h1>smt txt</h1>
+			{/* <Button
+				variant="contained"
+				color="error"
+				onClick={() => logi('Context')}
+			>
+				Context
+			</Button> */}
 
-			<Box sx={{ minWidth: 275 }}>
+			<h1>Пример формы</h1>
+
+			<Box sx={{ minWidth: 350 }}>
 				<Card variant="outlined">{card}</Card>
 			</Box>
 		</div>

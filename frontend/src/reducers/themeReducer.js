@@ -5,32 +5,25 @@ const initialState = {
 	isLoading: false,
 };
 
-export const getMetroItems = createAsyncThunk('metroItems/getMetroItems', async (_, thunkAPI) => {
-	try {
-		const items = 5;
-		return items;
-	} catch (err) {
-		return thunkAPI.rejectWithValue(err.message || 'Unknown error');
-	}
-});
+export const getsmtItems = createAsyncThunk('smtItems/getsmtItems', async (_, thunkAPI) => {});
 
-const metroItemsSlice = createSlice({
-	name: 'metroItems',
+const smtItemsSlice = createSlice({
+	name: 'smtItems',
 	initialState,
 
 	extraReducers: builder => {
 		builder
-			.addCase(getMetroItems.pending, state => {
+			.addCase(getsmtItems.pending, state => {
 				state.isLoading = true;
 			})
-			.addCase(getMetroItems.fulfilled, (state, { payload }) => {
+			.addCase(getsmtItems.fulfilled, (state, { payload }) => {
 				state.isLoading = false;
 				state.items = payload;
 			})
-			.addCase(getMetroItems.rejected, state => {
+			.addCase(getsmtItems.rejected, state => {
 				state.isLoading = false;
 			});
 	},
 });
 
-export default metroItemsSlice.reducer;
+export default smtItemsSlice.reducer;

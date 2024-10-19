@@ -1,6 +1,7 @@
 import './App.css';
-import { ColorModeContext, useMode } from '../theme/index';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { useMode } from '../theme/index';
+import { Button, CssBaseline, ThemeProvider } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 import React from 'react';
 import AppRouter from './AppRouter';
@@ -11,7 +12,15 @@ function App() {
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<div>
-				<div className="App-info">
+				<div className="App">
+					<Button
+						variant="contained"
+						color="warning"
+						endIcon={<SendIcon />}
+						onClick={colorMode.toggleColorMode}
+					>
+						Toggle Theme
+					</Button>
 					<AppRouter />
 				</div>
 			</div>

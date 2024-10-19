@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from 'react';
+import { useState, useMemo, createContext } from 'react';
 import { createTheme } from '@mui/material';
 
 export const tokens = (mode: string) => ({
@@ -110,10 +110,6 @@ export const themeSettings: any = (mode: string) => {
 	};
 };
 
-export const ColorModeContext: any = createContext({
-	toggleColorMode: () => {},
-});
-
 export const useMode = () => {
 	const [mode, setMode] = useState('dark');
 
@@ -128,3 +124,9 @@ export const useMode = () => {
 
 	return [theme, colorMode];
 };
+
+export const clgContext = createContext<any>({
+	logi: (some: any) => {
+		console.log(some);
+	},
+});
