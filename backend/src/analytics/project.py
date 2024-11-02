@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from collections import Counter
 
 #Загрузка таблиц
 file_path = "backend/src/Таблицы/2024-10-30 Zakalivanie i zimnee plavanie.xlsx"
@@ -53,5 +54,24 @@ for column in columns_to_encode:
     # Создаем словарь для столбца, где ключ - оригинальное значение, значение - закодированное значение
     encoding_dict[column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Нахождение моды для каждой таблицы
+columns_mode = []
 
-df.to_excel("Обработанная таблица zakalivanie i zimnee plavanie.xlsx", index=False)
+# Функция для нахождения моды столбца
+def find_mode(column):
+    counter = Counter(column)
+    most_common = counter.most_common()
+    
+    # Если мода 'Не указано', берем второе по популярности слово
+    if most_common[0][0] == 'Не указано' and len(most_common) > 1:
+        return most_common[1][0]
+    else:
+        return most_common[0][0]
+
+# Проходим по каждой колонке и находим моду 
+for column in df.columns:
+    mode_value = find_mode(df[column])
+    columns_mode.append((column, mode_value))
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+print(columns_mode)
