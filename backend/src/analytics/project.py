@@ -34,27 +34,62 @@ short_column_names = [
     'Семейное_положение', 'Деятельность', 'Образование', 'Профессия'
 ]
 df.columns = short_column_names
-df = df.fillna("Не указано")
+
+#Объединение большого количества столбцов в один, чтобы не было много пропущенных значений
+df['Мотивы закаливания'] = df.iloc[:, 1:11].apply(lambda row: '; '.join(row.dropna().astype(str)), axis=1)
+df['Негативные факторы'] = df.iloc[:, 11:21].apply(lambda row: '; '.join(row.dropna().astype(str)), axis=1)
+df['Практикуемые типы закаливания'] = df.loc[:, "Типы_обтирание":"Типы_плавание"].apply(lambda row: '; '.join(row.dropna().astype(str)), axis=1)
+df["Источники информации по теме закаливание"] =  df.loc[:, "Источники_интернет_статьи":"Источники_мероприятия"].apply(lambda row: '; '.join(row.dropna().astype(str)), axis=1)
+df["Методы популяризации закаливания"] = df.loc[:, "Метод_онлайн_ресурсы":"Метод_мессенджеры"].apply(lambda row: '; '.join(row.dropna().astype(str)), axis=1)
+df["Общее количество баллов самочувствия после закаливания"] = df.loc[:, "Эффект_самочувствие":"Психоэффект_тревога"].sum(axis=1)
+
+
+#Удаление объединенных столбцов
+df.drop(columns=['Мотив_иммунитет', 'Мотив_адаптация', 'Мотив_системы', 'Мотив_обмен', 'Мотив_работоспособность', 
+                 'Мотив_ЗОЖ', 'Мотив_спорт', 'Мотив_соревнования', 'Мотив_жизненная_ситуация', 'Мотив_вызов'], inplace=True)
+
+df.drop(columns=['Фактор_непонимание', 'Фактор_негативный_опыт', 'Фактор_отсутствие_поддержки', 'Фактор_информация', 
+                 'Фактор_страх', 'Фактор_время', 'Фактор_инфраструктура', 'Фактор_удаленность', 'Фактор_инструкторы'], inplace=True)
+
+df.drop(columns=['Типы_обтирание', 'Типы_обливание', 'Типы_душ', 'Типы_босохождение', 'Типы_баня', 
+                 'Типы_воздух', 'Типы_бег', 'Типы_прорубь', 'Типы_плавание'], inplace=True)
+
+df.drop(columns=['Источники_интернет_статьи', 'Источники_соцсети', 'Источники_рассылка', 'Источники_литература', 
+                 'Источники_консультации', 'Источники_советы', 'Источники_мероприятия'], inplace=True)
+
+df.drop(columns=['Метод_онлайн_ресурсы', 'Метод_соцсети', 'Метод_семинары', 'Метод_группы', 'Метод_информационные_материалы', 
+                 'Метод_сотрудничество', 'Метод_мессенджеры'], inplace=True)
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 #Обработка таблицы для корреляции
 correlation_table = df.copy()
+correlation_table.drop(columns=correlation_table.columns[2:17], inplace=True)
 encoding_dict = {}
 
-# Задаем диапазоны столбцов
-columns_to_encode = list(correlation_table.columns[:21]) + list(correlation_table.columns[36:])
+for column in correlation_table.columns:
+    if column != "Общее количество баллов самочувствия после закаливания":
+        encoder = LabelEncoder()
+        correlation_table[column] = encoder.fit_transform(correlation_table[column].astype(str))
+        encoding_dict[column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
 
-# Обработка каждого столбца из заданного диапазона
-for column in columns_to_encode:
-    # Инициализация LabelEncoder
-    encoder = LabelEncoder()
-    
-    # Применяем LabelEncoder к столбцу
-    correlation_table[column] = encoder.fit_transform(correlation_table[column])
-    
-    # Создаем словарь для столбца, где ключ - оригинальное значение, значение - закодированное значение
-    encoding_dict[column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
+# Расчет корреляции
+correlation_matrix = correlation_table.corr()
+correlated_columns = correlation_matrix["Общее количество баллов самочувствия после закаливания"].abs().sort_values(ascending=False)
+
+# Находим 5 столбцов с наибольшей корреляцией
+top_5_columns = correlated_columns.index[1:6]  # Пропускаем сам столбец "Общее количество баллов самочувствия"
+
+# Поиск двух самых встречаемых значений в каждом из топ-5 столбцов и добавление ранга значимости
+result_corr = []
+for rank, col in enumerate(top_5_columns, start=1):
+    value_counts = df[col].value_counts().nlargest(2)
+    most_common_values = value_counts.index.tolist()
+    significance_text = f"Ранг значимости {rank}, где чем выше ранг, тем значимее признак"
+    result_corr.append((col, significance_text, most_common_values))
+
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Нахождение моды для каждой таблицы
+#Нахождение моды для каждой столбца
 columns_mode = []
 
 # Функция для нахождения моды столбца
@@ -68,10 +103,28 @@ def find_mode(column):
     else:
         return most_common[0][0]
 
-# Проходим по каждой колонке и находим моду 
-for column in df.columns:
+# Проходим по каждой колонке и находим моду до -6 индекса столбца
+for column in df.columns[:-5]:
     mode_value = find_mode(df[column])
     columns_mode.append((column, mode_value))
+
+# Проходим по каждой колонке и находим моду от -5 индекса столбца
+for col in df.columns[-5:-1]:
+    values_list = []  # Временный список для хранения значений из одного столбца
+    
+    # Проход по каждой ячейке столбца
+    for value in df[col]:
+        if pd.notna(value):  # Проверка на ненулевое значение
+            split_values = value.split(';')  # Разделение строки по символу ";"
+            values_list.extend(split_values)  # Добавление значений в список
+    
+    # Поиск моды для текущего столбца
+    if values_list:
+        mode_value = Counter(values_list).most_common(1)[0][0]  # Нахождение наиболее частого элемента
+        columns_mode.append((col, mode_value))  # Добавление кортежа в список
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-print(columns_mode)
+#Функции для аналитики
+
+print(result_corr)
