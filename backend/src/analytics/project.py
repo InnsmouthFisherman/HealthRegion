@@ -143,38 +143,38 @@ def find_most_common_type_per_value(df, group_col):
     return df.groupby(group_col)['Практикуемые типы закаливания'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None).reset_index().rename(columns={'Практикуемые типы закаливания': f'Самый популярный тип закаливания для {group_col}'})
 
 # Список столбцов, для которых нужно найти самый популярный тип закаливания
-columns = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
+columns_tipi_zakalivania = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
 
 # Создание отдельных таблиц для каждого признака и вывод результатов
-results = {}
-# for col in columns:
-#     results[col] = find_most_common_type_per_value(kind_of_zakalivanie_table, col)
-#     print(f"\nСамый популярный тип закаливания для '{col}':")
-#     print(results[col])
+results_tipi_zakalivania = {}
+for col in columns_tipi_zakalivania:
+    results_tipi_zakalivania[col] = find_most_common_type_per_value(kind_of_zakalivanie_table, col)
+    print(f"\nСамый популярный тип закаливания для '{col}':")
+    print(results_tipi_zakalivania[col])
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #Перерывы в закаливании в зависимости от каких то признаков
 
 
 # Разделение данных в столбце 'Перерывы_практики' по знаку ";"
-kind_of_zakalivanie_table = df.copy()
-kind_of_zakalivanie_table = kind_of_zakalivanie_table.assign(
-    **{'Перерывы_практики': kind_of_zakalivanie_table['Перерывы_практики'].str.split(';')}
+table_practica = df.copy()
+table_practica = table_practica.assign(
+    **{'Перерывы_практики': table_practica['Перерывы_практики'].str.split(';')}
 ).explode('Перерывы_практики')
 
 # Удаление лишних пробелов в значениях после разбиения
-kind_of_zakalivanie_table['Перерывы_практики'] = kind_of_zakalivanie_table['Перерывы_практики'].str.strip()
+table_practica['Перерывы_практики'] = table_practica['Перерывы_практики'].str.strip()
 
 # Функция для нахождения самого популярного типа перерыва практики для каждого значения в столбце
 def find_most_common_type_per_value(df, group_col):
     return df.groupby(group_col)['Перерывы_практики'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None).reset_index().rename(columns={'Перерывы_практики': f'Самый популярный перерыв практики для {group_col}'})
 
 # Список столбцов, для которых нужно найти самый популярный тип перерыва практики
-columns = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
+columns_practica = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
 
 # Создание отдельных таблиц для каждого признака и вывод результатов
-results = {}
-for col in columns:
-    results[col] = find_most_common_type_per_value(kind_of_zakalivanie_table, col)
-    print(f"\nСамый популярный перерыв практики для '{col}':")
-    print(results[col])
+results_pirif_practica = {}
+# for col in columns_practica:
+#     results_pirif_practica[col] = find_most_common_type_per_value(table_practica, col)
+#     print(f"\nСамый популярный перерыв практики для '{col}':")
+#     print(results_pirif_practica[col])
