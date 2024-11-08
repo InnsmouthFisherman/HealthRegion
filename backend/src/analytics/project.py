@@ -174,7 +174,7 @@ columns_practica = ['Пол', 'Возраст', 'Регион', 'Семейно�
 
 # Создание отдельных таблиц для каждого признака и вывод результатов
 results_pirif_practica = {}
-# for col in columns_practica:
-#     results_pirif_practica[col] = find_most_common_type_per_value(table_practica, col)
-#     print(f"\nСамый популярный перерыв практики для '{col}':")
-#     print(results_pirif_practica[col])
+for col in columns_practica:
+    results_pirif_practica[col] = find_most_common_type_per_value(table_practica, col)
+    print(f"\nСамый популярный перерыв практики для '{col}':")
+    print(results_pirif_practica[col])
