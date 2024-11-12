@@ -4,7 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 
 #Загрузка таблиц
-file_path = "backend/src/Таблицы/2024-10-30 Zakalivanie i zimnee plavanie.xlsx"
+file_path = "backend/src/analytics/tables/2024-10-30 Zakalivanie i zimnee plavanie.xlsx"
 initial_df = pd.read_excel(file_path)
 df = initial_df.copy()
 
@@ -127,10 +127,23 @@ for col in df.columns[-5:-1]:
 
 #Функции для аналитики
 
+# Список столбцов для группировки
+columns = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
+
+# Функция для предварительной обработки столбца (разделение и очистка)
+def prepare_column(df, characteristic_col):
+    """
+    Разделяет значения по ';' и удаляет лишние пробелы в указанном столбце.
+    """
+    processed_df = df.copy()
+    processed_df = processed_df.assign(
+        **{characteristic_col: processed_df[characteristic_col].str.split(';')}
+    ).explode(characteristic_col)
+    processed_df[characteristic_col] = processed_df[characteristic_col].str.strip()
+    return processed_df
+
+# Функция для нахождения самого популярного значения в каждом столбце для каждого значения в columns
 def find_most_common_type_per_value(df, group_col, characteristic_col):
-    """
-    Функция для нахождения самого популярного значения в столбце characteristic_col для каждого значения в столбце group_col.
-    """
     return (
         df.groupby(group_col)[characteristic_col]
         .agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None)
@@ -138,45 +151,58 @@ def find_most_common_type_per_value(df, group_col, characteristic_col):
         .rename(columns={characteristic_col: f'Самый популярный {characteristic_col} для {group_col}'})
     )
 
-# Список столбцов для группировки
-columns_practica = ['Пол', 'Возраст', 'Регион', 'Семейное_положение', 'Деятельность', 'Профессия']
+# Обработка и нахождение результатов для каждого столбца отдельно
+# Мотивы закаливания
+motives_table = prepare_column(df, 'Мотивы закаливания')
+motives_results = {col: find_most_common_type_per_value(motives_table, col, 'Мотивы закаливания') for col in columns}
 
-# Список характеристических столбцов для анализа
-characteristics_columns = [
-    'Мотивы закаливания', 
-    'Негативные факторы', 
-    'Методы популяризации закаливания', 
-    'Источники информации по теме закаливание',
-    'Перерывы_практики',
-    'Практикуемые типы закаливания'
-]
+# Негативные факторы
+negative_factors_table = prepare_column(df, 'Негативные факторы')
+negative_factors_results = {col: find_most_common_type_per_value(negative_factors_table, col, 'Негативные факторы') for col in columns}
 
-# Создание словаря для хранения результатов
-results_characteristics = {}
+# Методы популяризации закаливания
+promotion_methods_table = prepare_column(df, 'Методы популяризации закаливания')
+promotion_methods_results = {col: find_most_common_type_per_value(promotion_methods_table, col, 'Методы популяризации закаливания') for col in columns}
 
-# Применение для каждого характеристического столбца
-for characteristic in characteristics_columns:
-    # Разделение данных по знаку ";"
-    table_characteristic = df.copy()
-    table_characteristic = table_characteristic.assign(
-        **{characteristic: table_characteristic[characteristic].str.split(';')}
-    ).explode(characteristic)
-    
-    # Удаление лишних пробелов в значениях
-    table_characteristic[characteristic] = table_characteristic[characteristic].str.strip()
-    
-    # Создание словаря для текущей характеристики
-    results_characteristics[characteristic] = {}
-    
-    # Нахождение самого популярного значения для каждого столбца из columns_practica
-    for col in columns_practica:
-        results_characteristics[characteristic][col] = find_most_common_type_per_value(table_characteristic, col, characteristic)
+# Источники информации по теме закаливание
+information_sources_table = prepare_column(df, 'Источники информации по теме закаливание')
+information_sources_results = {col: find_most_common_type_per_value(information_sources_table, col, 'Источники информации по теме закаливание') for col in columns}
+
+# Перерывы практики
+practice_breaks_table = prepare_column(df, 'Перерывы_практики')
+practice_breaks_results = {col: find_most_common_type_per_value(practice_breaks_table, col, 'Перерывы_практики') for col in columns}
+
+# Практикуемые типы закаливания
+practiced_types_table = prepare_column(df, 'Практикуемые типы закаливания')
+practiced_types_results = {col: find_most_common_type_per_value(practiced_types_table, col, 'Практикуемые типы закаливания') for col in columns}
 
 # Вывод результатов
-# for characteristic, results in results_characteristics.items():
-#     print(f"\nРезультаты для '{characteristic}':")
-#     for col, result in results.items():
-#         print(f"\nСамый популярный {characteristic} для '{col}':")
-#         print(result)
+# print("\nРезультаты для 'Мотивы закаливания':")
+# for col, result in motives_results.items():
+#     print(f"\nСамый популярный мотив закаливания для '{col}':")
+#     print(result)
 
-print(results_characteristics["Перерывы_практики"])
+# print("\nРезультаты для 'Негативные факторы':")
+# for col, result in negative_factors_results.items():
+#     print(f"\nСамый популярный негативный фактор для '{col}':")
+#     print(result)
+
+# print("\nРезультаты для 'Методы популяризации закаливания':")
+# for col, result in promotion_methods_results.items():
+#     print(f"\nСамый популярный метод популяризации закаливания для '{col}':")
+#     print(result)
+
+# print("\nРезультаты для 'Источники информации по теме закаливание':")
+# for col, result in information_sources_results.items():
+#     print(f"\nСамый популярный источник информации для '{col}':")
+#     print(result)
+
+# print("\nРезультаты для 'Перерывы практики':")
+# for col, result in practice_breaks_results.items():
+#     print(f"\nСамый популярный перерыв практики для '{col}':")
+#     print(result)
+
+# print("\nРезультаты для 'Практикуемые типы закаливания':")
+# for col, result in practiced_types_results.items():
+#     print(f"\nСамый популярный тип закаливания для '{col}':")
+#     print(result)
