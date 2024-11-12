@@ -206,3 +206,42 @@ practiced_types_results = {col: find_most_common_type_per_value(practiced_types_
 # for col, result in practiced_types_results.items():
 #     print(f"\nСамый популярный тип закаливания для '{col}':")
 #     print(result)
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#4
+
+# Определение столбцов с эффектами и группировки
+effect_columns = df.loc[:, 'Эффект_самочувствие':'Психоэффект_тревога'].columns
+group_columns = ['Период_практики', 'Перерывы_практики', 'Практикуемые типы закаливания']
+
+# Функция для нахождения столбцов с максимальным количеством "5" для заданного столбца группировки
+def get_sorted_effect_counts_overall(df, group_col):
+    # Преобразуем значения "5" в 1, остальные в 0
+    filtered_df = df[effect_columns].applymap(lambda x: 1 if x == 5 else 0)
+    
+    # Добавляем столбец группировки и считаем сумму значений "5" по столбцам с эффектами
+    grouped_counts = pd.concat([df[group_col], filtered_df], axis=1).groupby(group_col)[effect_columns].sum()
+    
+    # Суммируем общее количество "5" по всем значениям группы
+    total_counts = grouped_counts.sum(axis=0).sort_values(ascending=False)
+    
+    # Создаем список кортежей (название столбца, количество "5"), отсортированных по убыванию
+    sorted_effect_counts = [(col, count) for col, count in total_counts.items()]
+    
+    return sorted_effect_counts
+
+# Создаем результаты для каждого группирующего столбца
+results_period_practica = get_sorted_effect_counts_overall(df, 'Период_практики')
+results_breaks_practica = get_sorted_effect_counts_overall(df, 'Перерывы_практики')
+results_types_practica = get_sorted_effect_counts_overall(df, 'Практикуемые типы закаливания')
+
+# Вывод результатов
+print("\nРезультаты для 'Период_практики':")
+print(results_period_practica)
+
+print("\nРезультаты для 'Перерывы_практики':")
+print(results_breaks_practica)
+
+print("\nРезультаты для 'Практикуемые типы закаливания':")
+print(results_types_practica)
