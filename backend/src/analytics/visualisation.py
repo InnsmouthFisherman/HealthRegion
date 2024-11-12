@@ -16,10 +16,20 @@ def create_table(data, title):
     plt.title(title)
     plt.show()
 
-# Создаем таблицы для results_tipi_zakalivania
-for col, result in project.results_tipi_zakalivania.items():
+for col, result in project.practiced_types_results.items():
     create_table(result, f'Самый популярный тип закаливания')
 
-# Создаем таблицы для results_pirif_practica
-for col, result in project.results_pirif_practica.items():
+for col, result in project.practice_breaks_results.items():
     create_table(result, f'Самый популярный перерыв практики')
+
+for col, result in project.motives_results.items():
+    create_table(result, f'Самый популярный мотив закаливания')
+
+for col, result in project.negative_factors_results.items():
+    create_table(result, f'Самый популярный негативный фактор')
+
+for col, result in project.promotion_methods_results.items():
+    create_table(result, f'Самый популярный метод популяризации закаливания')
+
+for col, result in project.information_sources_results.items():
+    create_table(result, f'Самый популярный источник информации')
