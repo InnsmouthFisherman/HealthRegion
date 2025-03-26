@@ -4,12 +4,11 @@ from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 import re
 
-#Загрузка таблиц
+def validate_table(file_path):
+   
+    initial_df = pd.read_csv(file_path)
+    df = initial_df.copy()
 
-file_path = "backend/src/analytics/tables/2024-10-30 Zakalivanie i zimnee plavanie.xlsx"
-initial_df = pd.read_excel(file_path)
-df = initial_df.copy()
-
-df = df.fillna('пусто')
+    df = df.fillna('пусто')
 
 

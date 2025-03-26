@@ -3,17 +3,10 @@ from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URL
 import pandas as pd
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 def load_table(path):    
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
     df = pd.read_csv(path)
     
     df.to_sql("test_table", con=engine, if_exists="replace", index=False)
