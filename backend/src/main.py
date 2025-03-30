@@ -6,10 +6,9 @@ import chardet
 
 
 def main():
-    file_path = r"D:\coding\projects\HealthRegion\backend\src\tables\test_table.csv" 
-    connect_to_database()
+    file_path = r"D:\coding\projects\HealthRegion\backend\src\tables\test2.csv" 
     #validate_table(file_path)
-    #load_table(file_path)
+    load_table(file_path)
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,7 @@ import re
 
 def validate_table(file_path):
    
-    initial_df = pd.read_csv(file_path, encoding='UTF8', sep=';')
+    initial_df = pd.read_csv(file_path)
     df = initial_df.copy()
 
     df = df.fillna('пусто')
