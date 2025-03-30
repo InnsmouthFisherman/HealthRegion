@@ -13,8 +13,8 @@ def connect_to_database():
 
 def load_table(path):    
 
-    df = pd.read_csv(path, encoding="ASCII")
+    df = pd.read_csv(path, encoding="Windows-1251", sep=',')
     
     df.to_sql("test_table", con=connect_to_database(), if_exists="replace", index=False)
 
-    print(f"Таблица 'test_table' успешно загружена в базу данных.")
+    print(f"Таблица успешно загружена в базу данных.")
