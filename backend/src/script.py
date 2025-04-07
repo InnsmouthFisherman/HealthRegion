@@ -12,7 +12,7 @@ from collections import defaultdict
 
 #     df = df.fillna('пусто')
 
-file_path = 'backend/src/tables/2024-10-30 Zakalivanie i zimnee plavanie.xlsx'
+file_path = 'C:\Users\Maxim K\Desktop\HealthRegion-main\backend\src\tables\test2.csv'
 
 # table = validate_table(file_path)
 
@@ -36,7 +36,7 @@ def merge_grouped_columns(df, column_groups):
     return merged_data
 
 # Загрузка данных
-file_path = 'backend/src/tables/2024-10-30 Zakalivanie i zimnee plavanie.xlsx'
+file_path = 'C:\Users\Maxim K\Desktop\HealthRegion-main\backend\src\tables\test2.csv'
 df = pd.read_excel(file_path)
 
 # Группировка и объединение столбцов
