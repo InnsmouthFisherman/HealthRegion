@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URL
 import pandas as pd
-import psycopg2
 
 def connect_to_database():
     engine = create_engine(DATABASE_URL)
@@ -10,11 +9,7 @@ def connect_to_database():
     engine.connect()
     return engine
 
-
-def load_table(path):    
-
+def load_table(path, table_name):
     df = pd.read_csv(path, encoding="Windows-1251", sep=';')
-    
-    df.to_sql("TTTesttable12", con=connect_to_database(), if_exists="replace", index=False)
-
-    print(f"Таблица успешно загружена в базу данных.")
+    df.to_sql(table_name, con=connect_to_database(), if_exists="replace", index=False)
+    print(f"Таблица успешно загружена в базу данных как '{table_name}'")
